@@ -1,1 +1,1 @@
-https://REPLACE-WITH-YOUR-DEPLOYED-URL
+https://coruscant-health.onrender.com
