@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Register as Doctor - Coruscant Health{% endblock %}
+{% block content %}
+<div class="max-w-lg mx-auto bg-white border border-slate-200 rounded-xl p-6">
+  <h1 class="text-xl font-semibold mb-1">Register as a Doctor</h1>
+  <p class="text-sm text-slate-500 mb-6">
+    Your account will need to be approved by an administrator before you can log in.
+  </p>
+
+  <form method="post" novalidate class="space-y-4">
+    {% csrf_token %}
+    {% for field in form %}
+      <div>
+        <label for="{{ field.id_for_label }}" class="block text-sm font-medium mb-1">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<p class="text-xs text-slate-500 mt-1">{{ field.help_text }}</p>{% endif %}
+        {% if field.errors %}<p class="text-xs text-red-600 mt-1">{{ field.errors|striptags }}</p>{% endif %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="w-full bg-brand hover:bg-brand-dark text-white rounded-lg py-2 font-medium transition-colors">
+      Submit registration
+    </button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,43 @@
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, ListView
+
+from accounts.models import User
+
+from .forms import DeviceReadingForm
+from .models import DeviceReading
+
+
+class PatientRequiredMixin(UserPassesTestMixin):
+    """Only the PATIENT role (or a superuser, for admin/debugging access) may pass."""
+
+    def test_func(self):
+        user = self.request.user
+        return user.is_superuser or user.role == User.Role.PATIENT
+
+
+class UploadReadingView(LoginRequiredMixin, PatientRequiredMixin, CreateView):
+    form_class = DeviceReadingForm
+    template_name = "patients/upload_reading.html"
+    success_url = reverse_lazy("patients:reading_list")
+
+    def form_valid(self, form):
+        # The patient this reading belongs to is always the logged-in
+        # user's own profile - never taken from the form/request, so
+        # there's no way to submit a reading under someone else's name.
+        form.instance.patient = self.request.user.patient_profile
+        response = super().form_valid(form)
+        messages.success(self.request, "Reading uploaded.")
+        return response
+
+
+class ReadingListView(LoginRequiredMixin, PatientRequiredMixin, ListView):
+    template_name = "patients/reading_list.html"
+    context_object_name = "readings"
+    paginate_by = 20
+
+    def get_queryset(self):
+        # Scoped to the logged-in patient's own profile only - this is the
+        # query that matters most for patient data privacy in this app.
+        return DeviceReading.objects.filter(patient=self.request.user.patient_profile)

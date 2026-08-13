@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Administrator Dashboard - Coruscant Health{% endblock %}
+{% block content %}
+<h1 class="font-display text-2xl font-semibold uppercase tracking-wide text-brand mb-6">Administrator Dashboard</h1>
+
+<div class="bg-white border border-slate-200 rounded-xl p-6 flex items-center justify-between">
+  <div>
+    <p class="text-sm text-slate-500">Pending registrations</p>
+    <p class="text-3xl font-display font-semibold {% if pending_count %}text-stamp-pending{% else %}text-slate-800{% endif %}">{{ pending_count }}</p>
+  </div>
+  <a href="{% url 'accounts:pending_approvals' %}"
+     class="bg-brand hover:bg-brand-dark text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors">
+    Review approvals
+  </a>
+</div>
+
+<div class="mt-4">
+  <a href="{% url 'accounts:approval_log' %}" class="text-sm text-brand hover:underline">View approval history &rarr;</a>
+</div>
+
+<div class="mt-6 bg-white border border-slate-200 rounded-xl p-6">
+  <p class="text-sm text-slate-500">
+    Department and Emergency Services accounts, patient/doctor records, and
+    orders management are managed from the
+    <a href="{% url 'admin:index' %}" class="text-brand hover:underline">Django admin site</a>
+    for now, and will get dedicated screens as the system is built out further.
+  </p>
+</div>
+{% endblock %}

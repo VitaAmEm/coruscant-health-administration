@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Doctor Dashboard - Coruscant Health{% endblock %}
+{% block content %}
+<h1 class="font-display text-2xl font-semibold uppercase tracking-wide text-brand mb-6">Welcome, Dr. {{ user.last_name|default:user.username }}</h1>
+
+<div class="bg-white border border-slate-200 rounded-xl p-6 flex items-center justify-between">
+  <div>
+    <p class="text-sm text-slate-500">Patients in your care</p>
+    <p class="text-3xl font-display font-semibold text-brand">{{ patient_count }}</p>
+  </div>
+  <div class="flex gap-2">
+    <a href="{% url 'doctors:assign_patient' %}"
+       class="bg-white border border-brand text-brand hover:bg-brand-light rounded-lg px-4 py-2 text-sm font-medium transition-colors">
+      Add a patient
+    </a>
+    <a href="{% url 'doctors:patient_list' %}"
+       class="bg-brand hover:bg-brand-dark text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors">
+      View patients
+    </a>
+  </div>
+</div>
+{% endblock %}

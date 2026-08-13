@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Department Dashboard - Coruscant Health{% endblock %}
+{% block content %}
+<h1 class="font-display text-2xl font-semibold uppercase tracking-wide text-brand mb-6">
+  {{ user.department_profile.get_department_type_display|default:"Department" }}
+</h1>
+
+<div class="bg-white border border-slate-200 rounded-xl p-6 flex items-center justify-between">
+  <div>
+    <p class="text-sm text-slate-500">Pending orders in your queue</p>
+    <p class="text-3xl font-display font-semibold {% if pending_count %}text-stamp-pending{% else %}text-slate-800{% endif %}">{{ pending_count }}</p>
+  </div>
+  <a href="{% url 'departments:order_queue' %}"
+     class="bg-brand hover:bg-brand-dark text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors">
+    View queue
+  </a>
+</div>
+{% endblock %}

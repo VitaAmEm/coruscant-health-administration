@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}New Patient Intake - Coruscant Health{% endblock %}
+{% block content %}
+<div class="max-w-lg mx-auto bg-white border border-slate-200 rounded-xl p-6">
+  <h1 class="font-display text-xl font-semibold uppercase tracking-wide text-brand mb-1">New Patient Intake</h1>
+  <p class="text-sm text-slate-500 mb-6">
+    Enter what's known now. A username and password will be generated automatically -
+    you'll see them once on the next screen to pass along to the patient.
+  </p>
+
+  <form method="post" novalidate class="space-y-4">
+    {% csrf_token %}
+    {% for field in form %}
+      <div>
+        <label for="{{ field.id_for_label }}" class="block text-sm font-medium mb-1">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<p class="text-xs text-slate-500 mt-1">{{ field.help_text }}</p>{% endif %}
+        {% if field.errors %}<p class="text-xs text-red-600 mt-1">{{ field.errors|striptags }}</p>{% endif %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="w-full bg-brand hover:bg-brand-dark text-white rounded-lg py-2 font-medium transition-colors">
+      Register patient
+    </button>
+  </form>
+</div>
+{% endblock %}

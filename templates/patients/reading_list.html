@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Your Readings - Coruscant Health{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <h1 class="font-display text-2xl font-semibold uppercase tracking-wide text-brand">Your Readings</h1>
+  <a href="{% url 'patients:upload_reading' %}"
+     class="bg-brand hover:bg-brand-dark text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors">
+    Upload a reading
+  </a>
+</div>
+
+{% if readings %}
+<div class="bg-white border border-slate-200 rounded-xl divide-y divide-slate-100">
+  {% for reading in readings %}
+    <div class="p-4 flex items-center justify-between">
+      <div>
+        <p class="font-medium">{{ reading.get_reading_type_display }}</p>
+        <p class="text-xs text-slate-400">
+          Recorded {{ reading.recorded_at|date:"M j, Y H:i" }}
+          {% if reading.device_id %}&middot; Device {{ reading.device_id }}{% endif %}
+        </p>
+      </div>
+      <span class="font-mono text-lg text-brand-dark">{{ reading.value }}</span>
+    </div>
+  {% endfor %}
+</div>
+
+{% if is_paginated %}
+<div class="flex justify-between mt-4 text-sm">
+  {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}" class="text-brand hover:underline">&larr; Newer</a>
+  {% else %}<span></span>{% endif %}
+  {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}" class="text-brand hover:underline">Older &rarr;</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<div class="bg-white border border-slate-200 rounded-xl p-6 text-sm text-slate-500">
+  No readings yet.
+  <a href="{% url 'patients:upload_reading' %}" class="text-brand hover:underline">Upload your first one.</a>
+</div>
+{% endif %}
+{% endblock %}

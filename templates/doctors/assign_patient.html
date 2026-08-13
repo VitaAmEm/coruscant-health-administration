@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Add a Patient - Coruscant Health{% endblock %}
+{% block content %}
+<div class="max-w-md mx-auto bg-white border border-slate-200 rounded-xl p-6">
+  <h1 class="font-display text-xl font-semibold uppercase tracking-wide text-brand mb-1">Add a Patient</h1>
+  <p class="text-sm text-slate-500 mb-6">Enter the username of an approved patient to add them to your care.</p>
+
+  <form method="post" novalidate class="space-y-4">
+    {% csrf_token %}
+    {% for field in form %}
+      <div>
+        <label for="{{ field.id_for_label }}" class="block text-sm font-medium mb-1">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}<p class="text-xs text-red-600 mt-1">{{ field.errors|striptags }}</p>{% endif %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="w-full bg-brand hover:bg-brand-dark text-white rounded-lg py-2 font-medium transition-colors">
+      Add patient
+    </button>
+  </form>
+
+  <p class="text-xs text-slate-500 mt-5">
+    <a href="{% url 'doctors:patient_list' %}" class="text-brand hover:underline">&larr; Back to your patients</a>
+  </p>
+</div>
+{% endblock %}

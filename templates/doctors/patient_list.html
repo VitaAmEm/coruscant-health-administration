@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Your Patients - Coruscant Health{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <h1 class="font-display text-2xl font-semibold uppercase tracking-wide text-brand">Your Patients</h1>
+  <a href="{% url 'doctors:assign_patient' %}"
+     class="bg-brand hover:bg-brand-dark text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors">
+    Add a patient
+  </a>
+</div>
+
+{% if patients %}
+<div class="bg-white border border-slate-200 rounded-xl divide-y divide-slate-100">
+  {% for patient in patients %}
+    <a href="{% url 'doctors:patient_detail' patient.pk %}" class="p-4 flex items-center justify-between hover:bg-brand-light/40 transition-colors">
+      <div>
+        <p class="font-medium">{{ patient.user.get_full_name|default:patient.user.username }}</p>
+        <p class="text-xs text-slate-400">{{ patient.user.email }}</p>
+      </div>
+      <span class="text-brand text-sm">View &rarr;</span>
+    </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="bg-white border border-slate-200 rounded-xl p-6 text-sm text-slate-500">
+  You don't have any patients yet. <a href="{% url 'doctors:assign_patient' %}" class="text-brand hover:underline">Add one by username.</a>
+</div>
+{% endif %}
+{% endblock %}

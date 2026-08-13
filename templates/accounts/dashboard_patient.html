@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Patient Dashboard - Coruscant Health{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <h1 class="font-display text-2xl font-semibold uppercase tracking-wide text-brand">Welcome, {{ user.get_full_name|default:user.username }}</h1>
+  <a href="{% url 'patients:upload_reading' %}"
+     class="bg-brand hover:bg-brand-dark text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors">
+    Upload a reading
+  </a>
+</div>
+
+<div class="mb-4 flex items-center justify-between">
+  <p class="text-xs text-slate-500 uppercase tracking-widest">Recent readings</p>
+  <a href="{% url 'patients:reading_list' %}" class="text-sm text-brand hover:underline">View all &rarr;</a>
+</div>
+
+{% if recent_readings %}
+<div class="bg-white border border-slate-200 rounded-xl divide-y divide-slate-100">
+  {% for reading in recent_readings %}
+    <div class="p-4 flex items-center justify-between">
+      <div>
+        <p class="font-medium">{{ reading.get_reading_type_display }}</p>
+        <p class="text-xs text-slate-400">{{ reading.recorded_at|date:"M j, Y H:i" }}</p>
+      </div>
+      <span class="font-mono text-lg text-brand-dark">{{ reading.value }}</span>
+    </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="bg-white border border-slate-200 rounded-xl p-6 text-sm text-slate-500">
+  No readings yet. <a href="{% url 'patients:upload_reading' %}" class="text-brand hover:underline">Upload your first one.</a>
+</div>
+{% endif %}
+
+<div class="mt-8">
+  <p class="text-xs text-slate-500 uppercase tracking-widest mb-2">Doctor's suggestions</p>
+  {% if reports %}
+  <div class="bg-white border border-slate-200 rounded-xl divide-y divide-slate-100">
+    {% for report in reports %}
+      <div class="p-4">
+        <p class="text-sm">{{ report.content }}</p>
+        <p class="text-xs text-slate-400 mt-1">Dr. {{ report.doctor.user.last_name|default:report.doctor.user.username }} &middot; {{ report.created_at|date:"M j, Y" }}</p>
+      </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="bg-white border border-slate-200 rounded-xl p-6 text-sm text-slate-500">
+    No suggestions from your doctor yet.
+  </div>
+  {% endif %}
+</div>
+
+<div class="mt-8">
+  <p class="text-xs text-slate-500 uppercase tracking-widest mb-2">Documents</p>
+  <a href="{% url 'documents:document_list' user.patient_profile.pk %}"
+     class="inline-block bg-white border border-brand text-brand hover:bg-brand-light rounded-lg px-4 py-2 text-sm font-medium transition-colors">
+    View and upload documents
+  </a>
+</div>
+{% endblock %}

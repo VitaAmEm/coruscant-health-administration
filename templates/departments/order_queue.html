@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Order Queue - Coruscant Health{% endblock %}
+{% block content %}
+<h1 class="font-display text-2xl font-semibold uppercase tracking-wide text-brand mb-6">Order Queue</h1>
+
+{% if orders %}
+<div class="space-y-4">
+  {% for order in orders %}
+    <div class="bg-white border border-slate-200 rounded-xl p-4">
+      <div class="flex items-center justify-between mb-2">
+        <div>
+          <p class="font-medium">{{ order.get_order_type_display }} &middot; {{ order.patient.user.get_full_name|default:order.patient.user.username }}</p>
+          <p class="text-xs text-slate-400">Ordered by Dr. {{ order.doctor.user.last_name|default:order.doctor.user.username }} &middot; {{ order.created_at|date:"M j, Y" }}</p>
+        </div>
+        {% if order.status == "PENDING" %}
+          <span class="text-xs font-mono uppercase tracking-wide text-stamp-pending bg-stamp-pendingBg border border-stamp-pending/30 rounded px-2 py-0.5 shrink-0">Pending</span>
+        {% elif order.status == "IN_PROGRESS" %}
+          <span class="text-xs font-mono uppercase tracking-wide text-brand bg-brand-light border border-brand/30 rounded px-2 py-0.5 shrink-0">In Progress</span>
+        {% else %}
+          <span class="text-xs font-mono uppercase tracking-wide text-stamp-approved bg-stamp-approvedBg border border-stamp-approved/30 rounded px-2 py-0.5 shrink-0">Completed</span>
+        {% endif %}
+      </div>
+
+      {% if order.notes %}<p class="text-sm text-slate-500 mb-2">{{ order.notes }}</p>{% endif %}
+
+      {% if order.status == "PENDING" %}
+        <form method="post" action="{% url 'departments:claim_order' order.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="bg-brand hover:bg-brand-dark text-white rounded-lg px-3 py-1.5 text-sm font-medium transition-colors">
+            Claim
+          </button>
+        </form>
+      {% elif order.status == "IN_PROGRESS" %}
+        <form method="post" action="{% url 'departments:complete_order' order.pk %}" class="flex gap-2">
+          {% csrf_token %}
+          {{ complete_form.result_text }}
+          <button type="submit" class="bg-stamp-approved hover:opacity-90 text-white rounded-lg px-3 py-1.5 text-sm font-medium transition-opacity whitespace-nowrap">
+            Mark complete
+          </button>
+        </form>
+      {% else %}
+        <p class="text-sm text-brand-dark bg-brand-light/50 rounded-lg p-2">{{ order.result_text }}</p>
+      {% endif %}
+    </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="bg-white border border-slate-200 rounded-xl p-6 text-sm text-slate-500">
+  No orders in your queue right now.
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Patient Registered - Coruscant Health{% endblock %}
+{% block content %}
+<div class="max-w-lg mx-auto bg-white border border-slate-200 rounded-xl p-6">
+  <h1 class="font-display text-xl font-semibold uppercase tracking-wide text-brand mb-1">Patient Registered</h1>
+  <p class="text-sm text-slate-500 mb-6">
+    {{ credentials.full_name }} has been added and can log in immediately.
+    <strong>These credentials are shown once</strong> - write them down or hand them off now.
+  </p>
+
+  <div class="bg-stamp-pendingBg border border-stamp-pending/30 rounded-lg p-4 space-y-2 font-mono text-sm">
+    <div><span class="text-slate-500">Username:</span> {{ credentials.username }}</div>
+    <div><span class="text-slate-500">Password:</span> {{ credentials.password }}</div>
+  </div>
+
+  <a href="{% url 'emergency:intake' %}"
+     class="mt-6 inline-block bg-brand hover:bg-brand-dark text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors">
+    Register another patient
+  </a>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Documents - Coruscant Health{% endblock %}
+{% block content %}
+<h1 class="font-display text-2xl font-semibold uppercase tracking-wide text-brand mb-6">
+  Documents{% if user.role == "DOCTOR" %} &middot; {{ patient.user.get_full_name|default:patient.user.username }}{% endif %}
+</h1>
+
+{% if documents %}
+<div class="bg-white border border-slate-200 rounded-xl divide-y divide-slate-100 mb-6">
+  {% for document in documents %}
+    <div class="p-4 flex items-center justify-between">
+      <div>
+        <p class="font-medium">{{ document.title }}</p>
+        <p class="text-xs text-slate-400">
+          Uploaded by {{ document.uploaded_by.username|default:"deleted user" }} &middot; {{ document.uploaded_at|date:"M j, Y H:i" }}
+        </p>
+      </div>
+      <a href="{% url 'documents:download_document' document.pk %}"
+         class="text-sm text-brand hover:underline shrink-0">Download</a>
+    </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="bg-white border border-slate-200 rounded-xl p-6 text-sm text-slate-500 mb-6">
+  No documents uploaded yet.
+</div>
+{% endif %}
+
+<div class="bg-white border border-slate-200 rounded-xl p-4">
+  <p class="text-sm font-medium mb-3">Upload a document</p>
+  <form method="post" action="{% url 'documents:upload_document' patient.pk %}" enctype="multipart/form-data" class="space-y-3">
+    {% csrf_token %}
+    <div>
+      <label for="{{ upload_form.title.id_for_label }}" class="block text-sm font-medium mb-1">Title</label>
+      {{ upload_form.title }}
+    </div>
+    <div>
+      <label for="{{ upload_form.file.id_for_label }}" class="block text-sm font-medium mb-1">File</label>
+      {{ upload_form.file }}
+    </div>
+    <p class="text-xs text-slate-400">Files are encrypted before they're stored.</p>
+    <button type="submit" class="bg-brand hover:bg-brand-dark text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors">
+      Upload
+    </button>
+  </form>
+</div>
+{% endblock %}

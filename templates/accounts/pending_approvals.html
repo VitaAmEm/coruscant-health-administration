@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Pending Approvals - Coruscant Health{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <h1 class="font-display text-2xl font-semibold uppercase tracking-wide text-brand">Pending Registrations</h1>
+  <a href="{% url 'accounts:approval_log' %}" class="text-sm text-brand hover:underline">Approval history &rarr;</a>
+</div>
+
+{% if pending_users %}
+<div class="space-y-4">
+  {% for pending in pending_users %}
+    <div class="bg-white border border-slate-200 rounded-xl p-4">
+      <div class="flex items-center justify-between mb-3">
+        <div>
+          <p class="font-medium">{{ pending.get_full_name|default:pending.username }}
+            <span class="ml-2 text-xs font-mono uppercase tracking-wide text-stamp-pending bg-stamp-pendingBg border border-stamp-pending/30 rounded px-2 py-0.5">Pending</span>
+          </p>
+          <p class="text-sm text-slate-500">{{ pending.email }} &middot; {{ pending.get_role_display }} &middot; joined {{ pending.date_joined|date:"M j, Y" }}</p>
+          {% if pending.role == "DOCTOR" %}
+            <p class="text-sm font-mono text-brand-dark mt-1">
+              License: {{ pending.doctor_profile.license_number|default:"—" }}
+              {% if pending.doctor_profile.specialty %}&middot; {{ pending.doctor_profile.specialty }}{% endif %}
+            </p>
+          {% elif pending.role == "PATIENT" %}
+            <p class="text-sm font-mono text-brand-dark mt-1">
+              DOB: {{ pending.patient_profile.date_of_birth|default:"—" }}
+              {% if pending.patient_profile.device_id %}&middot; Device: {{ pending.patient_profile.device_id }}{% endif %}
+            </p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <form method="post" action="{% url 'accounts:approve_user' pending.pk %}" class="flex gap-2">
+          {% csrf_token %}
+          <input type="text" name="reason" placeholder="Optional note (e.g. license verified)"
+                 class="flex-1 rounded-lg border border-slate-300 px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand">
+          <button type="submit" class="bg-stamp-approved hover:opacity-90 text-white rounded-lg px-3 py-1.5 text-sm font-medium transition-opacity whitespace-nowrap">
+            Approve
+          </button>
+        </form>
+        <form method="post" action="{% url 'accounts:reject_user' pending.pk %}" class="flex gap-2"
+              onsubmit="return confirm('Reject and permanently remove {{ pending.username }}\'s registration?');">
+          {% csrf_token %}
+          <input type="text" name="reason" placeholder="Optional reason (e.g. invalid license number)"
+                 class="flex-1 rounded-lg border border-slate-300 px-3 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-stamp-rejected focus:border-stamp-rejected">
+          <button type="submit" class="bg-white border border-stamp-rejected text-stamp-rejected hover:bg-stamp-rejectedBg rounded-lg px-3 py-1.5 text-sm font-medium transition-colors whitespace-nowrap">
+            Reject
+          </button>
+        </form>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="bg-white border border-slate-200 rounded-xl p-6 text-sm text-slate-500">
+  No registrations are waiting for approval right now.
+</div>
+{% endif %}
+{% endblock %}

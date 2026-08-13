@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Emergency Services - Coruscant Health{% endblock %}
+{% block content %}
+<h1 class="font-display text-2xl font-semibold uppercase tracking-wide text-brand mb-2">Emergency Services</h1>
+<p class="text-sm text-slate-500 mb-6">Register a new patient arriving for urgent care. Accounts created here are active immediately - no approval wait.</p>
+
+<a href="{% url 'emergency:intake' %}"
+   class="inline-block bg-brand hover:bg-brand-dark text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors">
+  New patient intake
+</a>
+<a href="{% url 'emergency:intake_log' %}"
+   class="inline-block bg-white border border-brand text-brand hover:bg-brand-light rounded-lg px-4 py-2 text-sm font-medium transition-colors ml-2">
+  Intake history
+</a>
+{% endblock %}

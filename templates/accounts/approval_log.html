@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Approval History - Coruscant Health{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <h1 class="font-display text-2xl font-semibold uppercase tracking-wide text-brand">Approval History</h1>
+  <a href="{% url 'accounts:pending_approvals' %}" class="text-sm text-brand hover:underline">&larr; Back to pending queue</a>
+</div>
+
+{% if log_entries %}
+<div class="bg-white border border-slate-200 rounded-xl divide-y divide-slate-100">
+  {% for entry in log_entries %}
+    <div class="p-4 flex items-center justify-between gap-4">
+      <div>
+        <p class="font-mono text-sm">
+          {{ entry.target_username }}
+          <span class="text-xs text-slate-400">({{ entry.get_target_role_display }})</span>
+        </p>
+        {% if entry.reason %}<p class="text-sm text-slate-500 mt-1">&ldquo;{{ entry.reason }}&rdquo;</p>{% endif %}
+        <p class="text-xs text-slate-400 mt-1">
+          by {{ entry.performed_by.username|default:"deleted user" }} &middot; {{ entry.created_at|date:"M j, Y H:i" }}
+        </p>
+      </div>
+      {% if entry.action == "APPROVED" %}
+        <span class="text-xs font-mono uppercase tracking-wide text-stamp-approved bg-stamp-approvedBg border border-stamp-approved/30 rounded px-2 py-1 shrink-0">Approved</span>
+      {% else %}
+        <span class="text-xs font-mono uppercase tracking-wide text-stamp-rejected bg-stamp-rejectedBg border border-stamp-rejected/30 rounded px-2 py-1 shrink-0">Rejected</span>
+      {% endif %}
+    </div>
+  {% endfor %}
+</div>
+
+{% if is_paginated %}
+<div class="flex justify-between mt-4 text-sm">
+  {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}" class="text-brand hover:underline">&larr; Newer</a>
+  {% else %}<span></span>{% endif %}
+  {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}" class="text-brand hover:underline">Older &rarr;</a>
+  {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<div class="bg-white border border-slate-200 rounded-xl p-6 text-sm text-slate-500">
+  No approval decisions have been recorded yet.
+</div>
+{% endif %}
+{% endblock %}

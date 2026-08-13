@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Log in - Coruscant Health{% endblock %}
+{% block content %}
+<div class="max-w-sm mx-auto bg-white border border-slate-200 rounded-xl p-6">
+  <h1 class="text-xl font-semibold mb-1">Log in</h1>
+  <p class="text-sm text-slate-500 mb-6">Access your Coruscant Health dashboard.</p>
+
+  <form method="post" novalidate class="space-y-4">
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+    <div>
+      <label for="{{ form.username.id_for_label }}" class="block text-sm font-medium mb-1">Username</label>
+      {{ form.username }}
+    </div>
+    <div>
+      <label for="{{ form.password.id_for_label }}" class="block text-sm font-medium mb-1">Password</label>
+      {{ form.password }}
+    </div>
+    <button type="submit" class="w-full bg-brand hover:bg-brand-dark text-white rounded-lg py-2 font-medium transition-colors">
+      Log in
+    </button>
+  </form>
+
+  <p class="text-xs text-slate-500 mt-5">
+    New here?
+    <a href="{% url 'accounts:register_patient' %}" class="text-brand hover:underline">Register as a Patient</a>
+    or
+    <a href="{% url 'accounts:register_doctor' %}" class="text-brand hover:underline">Register as a Doctor</a>.
+  </p>
+</div>
+{% endblock %}

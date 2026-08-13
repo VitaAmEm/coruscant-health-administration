@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Intake History - Coruscant Health{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <h1 class="font-display text-2xl font-semibold uppercase tracking-wide text-brand">Intake History</h1>
+  <a href="{% url 'emergency:intake' %}" class="text-sm text-brand hover:underline">&larr; New intake</a>
+</div>
+
+{% if log_entries %}
+<div class="bg-white border border-slate-200 rounded-xl divide-y divide-slate-100">
+  {% for entry in log_entries %}
+    <div class="p-4 flex items-center justify-between">
+      <span class="font-mono text-sm">{{ entry.patient_username }}</span>
+      <span class="text-xs text-slate-400">
+        by {{ entry.performed_by.username|default:"deleted user" }} &middot; {{ entry.created_at|date:"M j, Y H:i" }}
+      </span>
+    </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="bg-white border border-slate-200 rounded-xl p-6 text-sm text-slate-500">No intakes recorded yet.</div>
+{% endif %}
+{% endblock %}
