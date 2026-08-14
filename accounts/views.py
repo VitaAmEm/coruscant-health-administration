@@ -132,20 +132,21 @@ class PatientReportDetailView(LoginRequiredMixin, TemplateView):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated or request.user.role != User.Role.PATIENT:
             raise PermissionDenied
+        from doctors.models import Report, ReportReadStatus
+
+        self.report = get_object_or_404(
+            Report.objects.select_related("doctor__user", "patient__user"),
+            pk=kwargs["pk"],
+            patient__user=request.user,
+        )
+        ReportReadStatus.objects.get_or_create(
+            report=self.report, patient=request.user.patient_profile
+        )
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        from doctors.models import Report, ReportReadStatus
-
-        context["report"] = get_object_or_404(
-            Report.objects.select_related("doctor__user", "patient__user"),
-            pk=self.kwargs["pk"],
-            patient__user=self.request.user,
-        )
-        ReportReadStatus.objects.get_or_create(
-            report=context["report"], patient=self.request.user.patient_profile
-        )
+        context["report"] = self.report
         return context
 
 
