@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Doctor's Suggestions - Coruscant Health{% endblock %}
+{% block content %}
+<div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-6">
+  <div>
+    <p class="text-xs text-slate-500 uppercase tracking-widest mb-1">Patient dashboard</p>
+    <h1 class="font-display text-2xl font-semibold uppercase tracking-wide text-brand">Doctor's suggestions</h1>
+  </div>
+  <a href="{% url 'accounts:dashboard_patient' %}" class="text-sm text-brand hover:underline">&larr; Dashboard</a>
+</div>
+
+<form method="get" class="mb-4 flex gap-2">
+  <label for="doctor-search" class="sr-only">Filter by doctor</label>
+  <input id="doctor-search" name="doctor" value="{{ doctor_query }}" type="search"
+         placeholder="Filter by doctor's first name"
+         class="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand">
+  <button type="submit" class="bg-white border border-brand text-brand hover:bg-brand-light rounded-lg px-4 py-2 text-sm font-medium transition-colors">Filter</button>
+  {% if doctor_query %}<a href="{% url 'accounts:patient_report_list' %}" class="self-center text-sm text-brand hover:underline">Clear</a>{% endif %}
+</form>
+
+{% if reports %}
+<div class="bg-white border border-slate-200 rounded-xl divide-y divide-slate-100">
+  {% for report in reports %}
+    <a href="{% url 'accounts:patient_report_detail' report.pk %}" class="block p-4 hover:bg-brand-light/40 transition-colors">
+      <p class="font-medium">{{ report.content|truncatewords:18 }}</p>
+      <p class="text-sm text-slate-400 mt-1">Dr. {{ report.doctor.user.last_name|default:report.doctor.user.username }} &middot; {{ report.created_at|date:"M j, Y" }}</p>
+      <span class="text-xs text-brand mt-2 inline-block">Read full note &rarr;</span>
+    </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="bg-white border border-slate-200 rounded-xl p-6 text-sm text-slate-500">No suggestions match this filter.</div>
+{% endif %}
+{% endblock %}

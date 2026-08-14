@@ -142,6 +142,33 @@ class PatientReportDetailView(LoginRequiredMixin, TemplateView):
         return context
 
 
+class PatientReportListView(LoginRequiredMixin, ListView):
+    template_name = "accounts/patient_report_list.html"
+    context_object_name = "reports"
+    paginate_by = 20
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated or request.user.role != User.Role.PATIENT:
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        from doctors.models import Report
+
+        queryset = Report.objects.filter(patient__user=self.request.user).select_related("doctor__user")
+        doctor_query = self.request.GET.get("doctor", "").strip()
+        if doctor_query:
+            queryset = queryset.filter(
+                doctor__user__first_name__icontains=doctor_query
+            ) | queryset.filter(doctor__user__last_name__icontains=doctor_query)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["doctor_query"] = self.request.GET.get("doctor", "")
+        return context
+
+
 class DoctorDashboardView(RoleDashboardView):
     required_role = User.Role.DOCTOR
     template_name = "accounts/dashboard_doctor.html"

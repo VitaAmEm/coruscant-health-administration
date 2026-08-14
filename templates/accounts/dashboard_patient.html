@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Patient Dashboard - Coruscant Health{% endblock %}
 {% block content %}
-<div class="flex items-center justify-between mb-6">
-  <h1 class="font-display text-2xl font-semibold uppercase tracking-wide text-brand">Welcome, {{ user.get_full_name|default:user.username }}</h1>
+<div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-8">
+  <div>
+    <p class="text-xs text-slate-500 uppercase tracking-widest mb-1">Patient dashboard</p>
+    <h1 class="font-display text-3xl font-semibold uppercase tracking-wide text-brand">Welcome, {{ user.get_full_name|default:user.username }}</h1>
+  </div>
   <a href="{% url 'patients:upload_reading' %}"
      class="bg-brand hover:bg-brand-dark text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors">
     Upload a reading
@@ -10,7 +13,7 @@
 </div>
 
 <div id="readings" class="mb-4 flex items-center justify-between scroll-mt-6">
-  <p class="text-xs text-slate-500 uppercase tracking-widest">Recent readings</p>
+  <a href="{% url 'patients:reading_list' %}" class="text-xs text-slate-500 uppercase tracking-widest hover:text-brand">Recent readings</a>
   <a href="{% url 'patients:reading_list' %}" class="text-sm text-brand hover:underline">View all &rarr;</a>
 </div>
 
@@ -33,7 +36,10 @@
 {% endif %}
 
 <div id="suggestions" class="mt-8 scroll-mt-6">
-  <p class="text-xs text-slate-500 uppercase tracking-widest mb-2">Doctor's suggestions</p>
+  <div class="mb-2 flex items-center justify-between">
+    <a href="{% url 'accounts:patient_report_list' %}" class="text-xs text-slate-500 uppercase tracking-widest hover:text-brand">Doctor's suggestions</a>
+    <a href="{% url 'accounts:patient_report_list' %}" class="text-sm text-brand hover:underline">View all &rarr;</a>
+  </div>
   {% if reports %}
   <div class="bg-white border border-slate-200 rounded-xl divide-y divide-slate-100">
     {% for report in reports %}

@@ -9,6 +9,15 @@
   </a>
 </div>
 
+<form method="get" class="mb-4 flex gap-2">
+  <label for="patient-search" class="sr-only">Search patients</label>
+  <input id="patient-search" name="q" value="{{ patient_query }}" type="search"
+         placeholder="Search by name or username"
+         class="flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand">
+  <button type="submit" class="bg-white border border-brand text-brand hover:bg-brand-light rounded-lg px-4 py-2 text-sm font-medium transition-colors">Search</button>
+  {% if patient_query %}<a href="{% url 'doctors:patient_list' %}" class="self-center text-sm text-brand hover:underline">Clear</a>{% endif %}
+</form>
+
 {% if patients %}
 <div class="bg-white border border-slate-200 rounded-xl divide-y divide-slate-100">
   {% for patient in patients %}

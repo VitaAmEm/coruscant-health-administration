@@ -54,8 +54,8 @@
           </summary>
           <div class="absolute right-0 top-full z-10 mt-2 w-56 rounded-lg border border-slate-200 bg-white p-2 shadow-lg">
             {% if user.role == "PATIENT" %}
-              <a href="{% url 'accounts:dashboard_patient' %}#suggestions" class="block rounded px-3 py-2 text-sm text-brand hover:bg-brand-light">Doctor's suggestions</a>
-              <a href="{% url 'accounts:dashboard_patient' %}#readings" class="block rounded px-3 py-2 text-sm text-brand hover:bg-brand-light">Recent readings</a>
+              <a href="{% url 'accounts:patient_report_list' %}" class="block rounded px-3 py-2 text-sm text-brand hover:bg-brand-light">Doctor's suggestions</a>
+              <a href="{% url 'patients:reading_list' %}" class="block rounded px-3 py-2 text-sm text-brand hover:bg-brand-light">Recent readings</a>
             {% else %}
               <a href="{% url 'accounts:dashboard' %}" class="block rounded px-3 py-2 text-sm text-brand hover:bg-brand-light">My dashboard</a>
             {% endif %}

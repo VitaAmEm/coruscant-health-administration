@@ -30,9 +30,22 @@ class PatientListView(DoctorRequiredMixin, ListView):
     context_object_name = "patients"
 
     def get_queryset(self):
-        return PatientProfile.objects.filter(
+        queryset = PatientProfile.objects.filter(
             assigned_doctors__doctor=self.request.user.doctor_profile
         ).select_related("user").distinct()
+        patient_query = self.request.GET.get("q", "").strip()
+        if patient_query:
+            queryset = queryset.filter(
+                user__first_name__icontains=patient_query
+            ) | queryset.filter(
+                user__last_name__icontains=patient_query
+            ) | queryset.filter(user__username__icontains=patient_query)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["patient_query"] = self.request.GET.get("q", "")
+        return context
 
 
 class AssignPatientView(DoctorRequiredMixin, FormView):
