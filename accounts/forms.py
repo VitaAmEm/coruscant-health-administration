@@ -91,4 +91,4 @@ class ApprovalAwareLoginForm(AuthenticationForm):
     def confirm_login_allowed(self, user):
         if user.is_active:
             return
-        raise forms.ValidationError("This account is inactive.", code="inactive")
+        raise forms.ValidationError("Invalid username or password.", code="inactive")

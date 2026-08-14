@@ -34,7 +34,7 @@ class PatientRegistrationTests(TestCase):
             reverse("accounts:login"),
             {"username": "han_solo", "password": "FalconPassword123!"},
         )
-        self.assertContains(response, "This account is inactive.")
+        self.assertContains(response, "Invalid username or password.")
         self.assertFalse(response.wsgi_request.user.is_authenticated)
 
     def test_approved_patient_can_log_in(self):
