@@ -9,7 +9,7 @@
   </a>
 </div>
 
-<form method="get" class="mb-4 flex flex-wrap gap-2">
+<form method="get" class="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-[minmax(0,1fr)_auto_auto_auto]">
   <label for="reading-type" class="sr-only">Filter readings by type</label>
   <select id="reading-type" name="type" class="min-w-52 flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand">
     <option value="">All reading types</option>
@@ -17,8 +17,14 @@
       <option value="{{ value }}" {% if reading_type_query == value %}selected{% endif %}>{{ label }}</option>
     {% endfor %}
   </select>
+    <label for="reading-from" class="sr-only">Readings from date</label>
+    <input id="reading-from" name="from" value="{{ date_from_query }}" type="date" aria-label="From date"
+      class="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand">
+    <label for="reading-to" class="sr-only">Readings to date</label>
+    <input id="reading-to" name="to" value="{{ date_to_query }}" type="date" aria-label="To date"
+      class="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand">
   <button type="submit" class="bg-white border border-brand text-brand hover:bg-brand-light rounded-lg px-4 py-2 text-sm font-medium transition-colors">Filter</button>
-  {% if reading_type_query %}<a href="{% url 'patients:reading_list' %}" class="self-center text-sm text-brand hover:underline">Clear</a>{% endif %}
+    {% if reading_type_query or date_from_query or date_to_query %}<a href="{% url 'patients:reading_list' %}" class="self-center text-sm text-brand hover:underline">Clear</a>{% endif %}
 </form>
 
 {% if readings %}

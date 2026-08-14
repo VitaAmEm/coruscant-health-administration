@@ -42,12 +42,20 @@ class ReadingListView(LoginRequiredMixin, PatientRequiredMixin, ListView):
         # query that matters most for patient data privacy in this app.
         queryset = DeviceReading.objects.filter(patient=self.request.user.patient_profile)
         reading_type = self.request.GET.get("type", "").strip()
+        date_from = self.request.GET.get("from", "").strip()
+        date_to = self.request.GET.get("to", "").strip()
         if reading_type:
             queryset = queryset.filter(reading_type=reading_type)
+        if date_from:
+            queryset = queryset.filter(recorded_at__date__gte=date_from)
+        if date_to:
+            queryset = queryset.filter(recorded_at__date__lte=date_to)
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["reading_type_query"] = self.request.GET.get("type", "")
+        context["date_from_query"] = self.request.GET.get("from", "")
+        context["date_to_query"] = self.request.GET.get("to", "")
         context["reading_types"] = DeviceReading.ReadingType.choices
         return context

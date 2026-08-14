@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.db.models import Prefetch
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, FormView, ListView
@@ -30,9 +31,17 @@ class PatientListView(DoctorRequiredMixin, ListView):
     context_object_name = "patients"
 
     def get_queryset(self):
+        from patients.models import DeviceReading
+
         queryset = PatientProfile.objects.filter(
             assigned_doctors__doctor=self.request.user.doctor_profile
-        ).select_related("user").distinct()
+        ).select_related("user").prefetch_related(
+            Prefetch(
+                "device_readings",
+                queryset=DeviceReading.objects.order_by("-recorded_at")[:1],
+                to_attr="latest_reading_list",
+            )
+        ).distinct()
         patient_query = self.request.GET.get("q", "").strip()
         if patient_query:
             queryset = queryset.filter(

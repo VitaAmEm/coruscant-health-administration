@@ -24,7 +24,17 @@
     <a href="{% url 'doctors:patient_detail' patient.pk %}" class="p-4 flex items-center justify-between hover:bg-brand-light/40 transition-colors">
       <div>
         <p class="font-medium">{{ patient.user.get_full_name|default:patient.user.username }}</p>
-        <p class="text-xs text-slate-400">{{ patient.user.email }}</p>
+        <p class="text-xs text-slate-400">
+          {{ patient.user.email }}
+          {% if patient.device_id %}&middot; Device {{ patient.device_id }}{% endif %}
+        </p>
+        {% with latest=patient.latest_reading_list.0 %}
+          {% if latest %}
+            <p class="text-xs text-brand mt-2">Latest: {{ latest.get_reading_type_display }} · {{ latest.value }} · {{ latest.recorded_at|date:"M j, Y H:i" }}</p>
+          {% else %}
+            <p class="text-xs text-slate-400 mt-2">No readings yet</p>
+          {% endif %}
+        {% endwith %}
       </div>
       <span class="text-brand text-sm">View &rarr;</span>
     </a>
