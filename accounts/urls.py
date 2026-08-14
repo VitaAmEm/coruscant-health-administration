@@ -14,6 +14,7 @@ urlpatterns = [
     path("dashboard/patient/", views.PatientDashboardView.as_view(), name="dashboard_patient"),
     path("dashboard/patient/reports/<int:pk>/", views.PatientReportDetailView.as_view(), name="patient_report_detail"),
     path("dashboard/patient/reports/", views.PatientReportListView.as_view(), name="patient_report_list"),
+    path("dashboard/patient/doctors/", views.PatientDoctorListView.as_view(), name="patient_doctor_list"),
     path("dashboard/doctor/", views.DoctorDashboardView.as_view(), name="dashboard_doctor"),
     path("dashboard/department/", views.DepartmentDashboardView.as_view(), name="dashboard_department"),
     path("dashboard/emergency/", views.EmergencyDashboardView.as_view(), name="dashboard_emergency"),

@@ -9,6 +9,18 @@
   </a>
 </div>
 
+<form method="get" class="mb-4 flex flex-wrap gap-2">
+  <label for="reading-type" class="sr-only">Filter readings by type</label>
+  <select id="reading-type" name="type" class="min-w-52 flex-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-brand">
+    <option value="">All reading types</option>
+    {% for value, label in reading_types %}
+      <option value="{{ value }}" {% if reading_type_query == value %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="bg-white border border-brand text-brand hover:bg-brand-light rounded-lg px-4 py-2 text-sm font-medium transition-colors">Filter</button>
+  {% if reading_type_query %}<a href="{% url 'patients:reading_list' %}" class="self-center text-sm text-brand hover:underline">Clear</a>{% endif %}
+</form>
+
 {% if readings %}
 <div class="bg-white border border-slate-200 rounded-xl divide-y divide-slate-100">
   {% for reading in readings %}

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}My Doctors - Coruscant Health{% endblock %}
+{% block content %}
+<div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-6">
+  <div>
+    <p class="text-xs text-slate-500 uppercase tracking-widest mb-1">Patient dashboard</p>
+    <h1 class="font-display text-2xl font-semibold uppercase tracking-wide text-brand">My doctors</h1>
+  </div>
+  <a href="{% url 'accounts:dashboard_patient' %}" class="text-sm text-brand hover:underline">&larr; Dashboard</a>
+</div>
+
+{% if doctors %}
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  {% for assignment in doctors %}
+    <div class="bg-white border border-slate-200 rounded-xl p-5">
+      <p class="font-medium text-lg">Dr. {{ assignment.doctor.user.get_full_name|default:assignment.doctor.user.username }}</p>
+      <p class="text-sm text-slate-500 mt-1">{{ assignment.doctor.specialty|default:"Care provider" }}</p>
+      {% if assignment.doctor.user.email %}<p class="text-xs text-slate-400 mt-3">{{ assignment.doctor.user.email }}</p>{% endif %}
+      <a href="{% url 'accounts:patient_report_list' %}?doctor={{ assignment.doctor.user.last_name }}" class="inline-block mt-4 text-sm text-brand hover:underline">View suggestions &rarr;</a>
+    </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="bg-white border border-slate-200 rounded-xl p-6 text-sm text-slate-500">You do not have any doctors assigned yet.</div>
+{% endif %}
+{% endblock %}

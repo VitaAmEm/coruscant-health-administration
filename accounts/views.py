@@ -169,6 +169,25 @@ class PatientReportListView(LoginRequiredMixin, ListView):
         return context
 
 
+class PatientDoctorListView(LoginRequiredMixin, ListView):
+    template_name = "accounts/patient_doctor_list.html"
+    context_object_name = "doctors"
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated or request.user.role != User.Role.PATIENT:
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        from doctors.models import DoctorPatientAssignment
+
+        return (
+            DoctorPatientAssignment.objects.filter(patient__user=self.request.user)
+            .select_related("doctor__user")
+            .order_by("doctor__user__last_name", "doctor__user__first_name")
+        )
+
+
 class DoctorDashboardView(RoleDashboardView):
     required_role = User.Role.DOCTOR
     template_name = "accounts/dashboard_doctor.html"

@@ -40,4 +40,14 @@ class ReadingListView(LoginRequiredMixin, PatientRequiredMixin, ListView):
     def get_queryset(self):
         # Scoped to the logged-in patient's own profile only - this is the
         # query that matters most for patient data privacy in this app.
-        return DeviceReading.objects.filter(patient=self.request.user.patient_profile)
+        queryset = DeviceReading.objects.filter(patient=self.request.user.patient_profile)
+        reading_type = self.request.GET.get("type", "").strip()
+        if reading_type:
+            queryset = queryset.filter(reading_type=reading_type)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["reading_type_query"] = self.request.GET.get("type", "")
+        context["reading_types"] = DeviceReading.ReadingType.choices
+        return context

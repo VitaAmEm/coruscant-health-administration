@@ -56,6 +56,10 @@
             {% if user.role == "PATIENT" %}
               <a href="{% url 'accounts:patient_report_list' %}" class="block rounded px-3 py-2 text-sm text-brand hover:bg-brand-light">Doctor's suggestions</a>
               <a href="{% url 'patients:reading_list' %}" class="block rounded px-3 py-2 text-sm text-brand hover:bg-brand-light">Recent readings</a>
+              <a href="{% url 'accounts:patient_doctor_list' %}" class="block rounded px-3 py-2 text-sm text-brand hover:bg-brand-light">My doctors</a>
+            {% elif user.role == "DOCTOR" %}
+              <a href="{% url 'doctors:patient_list' %}" class="block rounded px-3 py-2 text-sm text-brand hover:bg-brand-light">My patients</a>
+              <a href="{% url 'doctors:assign_patient' %}" class="block rounded px-3 py-2 text-sm text-brand hover:bg-brand-light">Add a patient</a>
             {% else %}
               <a href="{% url 'accounts:dashboard' %}" class="block rounded px-3 py-2 text-sm text-brand hover:bg-brand-light">My dashboard</a>
             {% endif %}
