@@ -122,6 +122,26 @@ class PatientDashboardView(RoleDashboardView):
         return context
 
 
+class PatientReportDetailView(LoginRequiredMixin, TemplateView):
+    template_name = "accounts/patient_report_detail.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated or request.user.role != User.Role.PATIENT:
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        from doctors.models import Report
+
+        context["report"] = get_object_or_404(
+            Report.objects.select_related("doctor__user", "patient__user"),
+            pk=self.kwargs["pk"],
+            patient__user=self.request.user,
+        )
+        return context
+
+
 class DoctorDashboardView(RoleDashboardView):
     required_role = User.Role.DOCTOR
     template_name = "accounts/dashboard_doctor.html"

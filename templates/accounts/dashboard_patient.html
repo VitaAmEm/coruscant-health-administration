@@ -9,7 +9,7 @@
   </a>
 </div>
 
-<div class="mb-4 flex items-center justify-between">
+<div id="readings" class="mb-4 flex items-center justify-between scroll-mt-6">
   <p class="text-xs text-slate-500 uppercase tracking-widest">Recent readings</p>
   <a href="{% url 'patients:reading_list' %}" class="text-sm text-brand hover:underline">View all &rarr;</a>
 </div>
@@ -32,15 +32,16 @@
 </div>
 {% endif %}
 
-<div class="mt-8">
+<div id="suggestions" class="mt-8 scroll-mt-6">
   <p class="text-xs text-slate-500 uppercase tracking-widest mb-2">Doctor's suggestions</p>
   {% if reports %}
   <div class="bg-white border border-slate-200 rounded-xl divide-y divide-slate-100">
     {% for report in reports %}
-      <div class="p-4">
-        <p class="text-sm">{{ report.content }}</p>
+      <a href="{% url 'accounts:patient_report_detail' report.pk %}" class="block p-4 hover:bg-brand-light/40 transition-colors">
+        <p class="text-sm font-medium">{{ report.content|truncatewords:12 }}</p>
         <p class="text-xs text-slate-400 mt-1">Dr. {{ report.doctor.user.last_name|default:report.doctor.user.username }} &middot; {{ report.created_at|date:"M j, Y" }}</p>
-      </div>
+        <span class="text-xs text-brand mt-2 inline-block">Read full note &rarr;</span>
+      </a>
     {% endfor %}
   </div>
   {% else %}

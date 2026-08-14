@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Doctor's Suggestion - Coruscant Health{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto">
+  <a href="{% url 'accounts:dashboard_patient' %}#suggestions" class="text-sm text-brand hover:underline">&larr; Back to suggestions</a>
+  <article class="mt-6 bg-white border border-slate-200 rounded-xl p-6">
+    <p class="text-xs text-slate-500 uppercase tracking-widest mb-3">Doctor's suggestion</p>
+    <div class="text-lg leading-8 whitespace-pre-line">{{ report.content }}</div>
+    <p class="text-sm text-slate-400 mt-6">Dr. {{ report.doctor.user.last_name|default:report.doctor.user.username }} &middot; {{ report.created_at|date:"M j, Y" }}</p>
+  </article>
+</div>
+{% endblock %}

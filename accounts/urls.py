@@ -12,6 +12,7 @@ urlpatterns = [
     path("logout/", LogoutView.as_view(), name="logout"),
     path("dashboard/", views.DashboardRedirectView.as_view(), name="dashboard"),
     path("dashboard/patient/", views.PatientDashboardView.as_view(), name="dashboard_patient"),
+    path("dashboard/patient/reports/<int:pk>/", views.PatientReportDetailView.as_view(), name="patient_report_detail"),
     path("dashboard/doctor/", views.DoctorDashboardView.as_view(), name="dashboard_doctor"),
     path("dashboard/department/", views.DepartmentDashboardView.as_view(), name="dashboard_department"),
     path("dashboard/emergency/", views.EmergencyDashboardView.as_view(), name="dashboard_emergency"),
