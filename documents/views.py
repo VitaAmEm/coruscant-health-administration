@@ -4,6 +4,7 @@ from django.core.files.base import ContentFile
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import FormView, ListView, View
+import logging
 
 from accounts.models import PatientProfile, User
 from doctors.models import DoctorPatientAssignment
@@ -11,6 +12,8 @@ from doctors.models import DoctorPatientAssignment
 from .crypto import decrypt_bytes, encrypt_bytes
 from .forms import DocumentUploadForm
 from .models import Document
+
+logger = logging.getLogger(__name__)
 
 
 def _get_authorized_patient(request, patient_pk):
@@ -71,17 +74,27 @@ class UploadDocumentView(LoginRequiredMixin, FormView):
         # Encryption happens here, before anything touches disk - the
         # FileField below only ever receives ciphertext, so there's no
         # intermediate step where the plaintext file exists in storage.
-        raw_bytes = uploaded_file.read()
-        encrypted_bytes = encrypt_bytes(raw_bytes)
+        try:
+            raw_bytes = uploaded_file.read()
+            encrypted_bytes = encrypt_bytes(raw_bytes)
 
-        document = Document(
-            patient=patient,
-            uploaded_by=self.request.user,
-            title=form.cleaned_data["title"],
-            original_filename=uploaded_file.name,
-            content_type=uploaded_file.content_type or "application/octet-stream",
-        )
-        document.encrypted_file.save(f"{uploaded_file.name}.enc", ContentFile(encrypted_bytes), save=True)
+            document = Document(
+                patient=patient,
+                uploaded_by=self.request.user,
+                title=form.cleaned_data["title"],
+                original_filename=uploaded_file.name,
+                content_type=uploaded_file.content_type or "application/octet-stream",
+            )
+            document.encrypted_file.save(
+                f"{uploaded_file.name}.enc", ContentFile(encrypted_bytes), save=True
+            )
+        except Exception:
+            logger.exception("Document upload failed for patient profile %s", patient.pk)
+            messages.error(
+                self.request,
+                "The document could not be uploaded. Please try again or contact an administrator.",
+            )
+            return redirect("documents:document_list", patient_pk=patient.pk)
 
         messages.success(self.request, "Document uploaded and encrypted.")
         return redirect("documents:document_list", patient_pk=patient.pk)
