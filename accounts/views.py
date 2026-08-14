@@ -116,9 +116,13 @@ class PatientDashboardView(RoleDashboardView):
         if patient_profile is not None:
             context["recent_readings"] = DeviceReading.objects.filter(patient=patient_profile)[:5]
             context["reports"] = Report.objects.filter(patient=patient_profile).select_related("doctor__user")[:5]
+            context["unread_report_count"] = Report.objects.filter(patient=patient_profile).exclude(
+                read_statuses__patient=patient_profile
+            ).count()
         else:
             context["recent_readings"] = []
             context["reports"] = []
+            context["unread_report_count"] = 0
         return context
 
 
@@ -132,12 +136,15 @@ class PatientReportDetailView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        from doctors.models import Report
+        from doctors.models import Report, ReportReadStatus
 
         context["report"] = get_object_or_404(
             Report.objects.select_related("doctor__user", "patient__user"),
             pk=self.kwargs["pk"],
             patient__user=self.request.user,
+        )
+        ReportReadStatus.objects.get_or_create(
+            report=context["report"], patient=self.request.user.patient_profile
         )
         return context
 

@@ -43,3 +43,19 @@ class Report(models.Model):
 
     def __str__(self):
         return f"Report for {self.patient.user.username} by Dr. {self.doctor.user.username}"
+
+
+class ReportReadStatus(models.Model):
+    """Tracks whether the report's intended patient has opened it."""
+
+    report = models.ForeignKey(Report, on_delete=models.CASCADE, related_name="read_statuses")
+    patient = models.ForeignKey(PatientProfile, on_delete=models.CASCADE, related_name="report_read_statuses")
+    read_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["report", "patient"], name="unique_report_patient_read_status"),
+        ]
+
+    def __str__(self):
+        return f"Read: report {self.report_id} by patient {self.patient_id}"

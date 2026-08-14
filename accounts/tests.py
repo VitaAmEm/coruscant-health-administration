@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from .models import ApprovalLog, DepartmentProfile, DoctorProfile, PatientProfile, User
+from doctors.models import Report, ReportReadStatus
 
 
 class PatientRegistrationTests(TestCase):
@@ -90,6 +91,50 @@ class DoctorRegistrationTests(TestCase):
         self.assertFalse(user.is_active)
         profile = DoctorProfile.objects.get(user=user)
         self.assertEqual(profile.license_number, "CHA-0001")
+
+
+class PatientReportReadTrackingTests(TestCase):
+    def setUp(self):
+        self.patient_user = User.objects.create_user(
+            username="report_patient", password="PatientPass123!", role=User.Role.PATIENT,
+            is_approved=True, is_active=True,
+        )
+        self.patient_profile = PatientProfile.objects.create(user=self.patient_user)
+        self.other_patient_user = User.objects.create_user(
+            username="other_report_patient", password="PatientPass123!", role=User.Role.PATIENT,
+            is_approved=True, is_active=True,
+        )
+        self.other_patient_profile = PatientProfile.objects.create(user=self.other_patient_user)
+        doctor_user = User.objects.create_user(
+            username="report_doctor", password="DoctorPass123!", role=User.Role.DOCTOR,
+            is_approved=True, is_active=True,
+        )
+        doctor_profile = DoctorProfile.objects.create(user=doctor_user, license_number="READ-001")
+        self.report = Report.objects.create(
+            doctor=doctor_profile, patient=self.patient_profile, content="Please rest and hydrate.",
+        )
+
+    def test_patient_dashboard_shows_unread_report_count(self):
+        self.client.force_login(self.patient_user)
+        response = self.client.get(reverse("accounts:dashboard_patient"))
+
+        self.assertContains(response, "1 new")
+
+    def test_opening_report_marks_it_read_and_removes_unread_count(self):
+        self.client.force_login(self.patient_user)
+        response = self.client.get(reverse("accounts:patient_report_detail", args=[self.report.pk]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(ReportReadStatus.objects.filter(report=self.report, patient=self.patient_profile).exists())
+        dashboard = self.client.get(reverse("accounts:dashboard_patient"))
+        self.assertNotContains(dashboard, "1 new")
+
+    def test_other_patient_cannot_read_report_or_create_read_status(self):
+        self.client.force_login(self.other_patient_user)
+        response = self.client.get(reverse("accounts:patient_report_detail", args=[self.report.pk]))
+
+        self.assertEqual(response.status_code, 404)
+        self.assertFalse(ReportReadStatus.objects.exists())
 
 
 class AdministratorCreatedAccountTests(TestCase):

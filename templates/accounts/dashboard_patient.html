@@ -37,7 +37,7 @@
 
 <div id="suggestions" class="mt-8 scroll-mt-6">
   <div class="mb-2 flex items-center justify-between">
-    <a href="{% url 'accounts:patient_report_list' %}" class="text-xs text-slate-500 uppercase tracking-widest hover:text-brand">Doctor's suggestions</a>
+    <a href="{% url 'accounts:patient_report_list' %}" class="text-xs text-slate-500 uppercase tracking-widest hover:text-brand">Doctor's suggestions{% if unread_report_count %} <span class="normal-case text-stamp-pending">({{ unread_report_count }} new)</span>{% endif %}</a>
     <a href="{% url 'accounts:patient_report_list' %}" class="text-sm text-brand hover:underline">View all &rarr;</a>
   </div>
   {% if reports %}
