@@ -91,9 +91,4 @@ class ApprovalAwareLoginForm(AuthenticationForm):
     def confirm_login_allowed(self, user):
         if user.is_active:
             return
-        if user.role in User.SELF_REGISTER_ROLES and not user.is_approved:
-            raise forms.ValidationError(
-                "Your account is still awaiting administrator approval.",
-                code="pending_approval",
-            )
         raise forms.ValidationError("This account is inactive.", code="inactive")
